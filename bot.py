@@ -5,23 +5,24 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import requests
 
 TG_TOKEN = os.environ["TG_TOKEN"]
-GEMINI_KEY = os.environ["GEMINI_KEY"]
-MODEL = "gemini-2.5-flash"  # если будет ошибка модели, замени на актуальную из AI Studio
+GROQ_KEY = os.environ["GROQ_KEY"]
+MODEL = "llama-3.3-70b-versatile"  # если будет ошибка модели, замени на актуальную с console.groq.com
 
 SYSTEM_PROMPT = (
-    "Ты дружелюбный репетитор для школьников 5-11 классов. "
-    "Не давай готовое решение сразу: веди наводящими вопросами и объясняй просто, с примерами. "
-    "Если ученик просит проверить решение, найди ошибку и подскажи, как её исправить. "
-    "Отвечай коротко и на русском. Не обсуждай ничего, кроме учёбы."
+    "Ты помощник для школьников 5-11 классов. "
+    "Сразу давай готовый ответ или решение, без наводящих вопросов. "
+    "После ответа коротко и понятно объясни, как это решается, по шагам. "
+    "Если ученик присылает своё решение, скажи, правильно ли оно, и исправь ошибки. "
+    "Отвечай только на русском языке. Не обсуждай ничего, кроме учёбы."
 )
 
 TG_URL = f"https://api.telegram.org/bot{TG_TOKEN}"
-GEMINI_URL = f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent"
+GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 
-history = {}      # chat_id -> список сообщений
-usage = {}        # chat_id -> времена последних запросов
-MAX_HISTORY = 10  # сколько последних сообщений помнить
-MAX_PER_HOUR = 20 # лимит запросов на ученика в час
+history = {}       # chat_id -> список сообщений
+usage = {}         # chat_id -> времена последних запросов
+MAX_HISTORY = 10   # сколько последних сообщений помнить
+MAX_PER_HOUR = 20  # лимит запросов на ученика в час
 
 
 def allowed(chat_id):
